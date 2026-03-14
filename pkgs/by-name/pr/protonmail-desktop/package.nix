@@ -74,6 +74,11 @@ stdenv.mkDerivation {
     runHook postInstall
   '';
 
+  postInstall = lib.optionalString stdenv.hostPlatform.isLinux ''
+    substituteInPlace $out/share/applications/proton-mail.desktop \
+      --replace-fail "Exec=proton-mail" "Exec=$out/bin/proton-mail"
+  '';
+
   preFixup = lib.optionalString stdenv.hostPlatform.isLinux ''
     makeWrapper ${lib.getExe electron} $out/bin/${mainProgram} \
       --add-flags $out/share/proton-mail/app.asar \
